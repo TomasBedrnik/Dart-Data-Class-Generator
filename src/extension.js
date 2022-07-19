@@ -1134,7 +1134,7 @@ class DataClassGenerator {
             switch (prop.type) {
                 case 'DateTime':
                     value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
-                    return `DateTime.fromMillisecondsSinceEpoch(${value}${materialConvertValue})`;
+                    return `(${value} as Timestamp).toDate()`;
                 case 'Color':
                     value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
                     return `Color(${value}${materialConvertValue})`;
