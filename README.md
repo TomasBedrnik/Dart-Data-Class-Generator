@@ -1,7 +1,12 @@
 # Dart Data Class Generator
 
-[![GitHub Stars](https://img.shields.io/github/stars/bxqm/dart_data_class_generator.svg?logo=github)](https://github.com/bxqm/dart_data_class_generator)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/hzgood.dart-data-class-generator?color=blue)](https://github.com/bxqm/dart_data_class_generator)
+My fork of [Dart Data Class Generator](https://marketplace.visualstudio.com/items?itemName=hzgood.dart-data-class-generator) which does not exists any more. Forked from [huang12zheng](https://github.com/huang12zheng/Dart-Data-Class-Generator.git).
+<!-- [![GitHub Stars](https://img.shields.io/github/stars/bxqm/dart_data_class_generator.svg?logo=github)](https://github.com/bxqm/dart_data_class_generator)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/hzgood.dart-data-class-generator?color=blue)](https://github.com/bxqm/dart_data_class_generator) -->
+
+I fixed some issues with original extension, but credit goes to origial authors...
+
+---
 
 
 Create dart data classes easily, fast and without writing boilerplate or running code generation.  
