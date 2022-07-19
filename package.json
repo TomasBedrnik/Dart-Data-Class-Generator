@@ -3,9 +3,9 @@
 	"displayName": "Dart Data Class Generator",
 	"description": "Create dart data classes easily, fast and without writing boilerplate or running code generation.",
 	"publisher": "TomasBedrnik",
-	"version": "0.5.4",
+	"version": "0.5.5",
 	"engines": {
-		"vscode": "^1.37.0"
+		"vscode": "^1.69.0"
 	},
 	"repository": {
 		"type": "git",
@@ -223,14 +223,14 @@
 		"test": "node ./test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.37.0",
-		"eslint": "^5.13.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"vscode-test": "^1.0.2"
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^10.17.60",
+		"@types/vscode": "^1.69.0",
+		"@vscode/test-electron": "^2.1.5",
+		"eslint": "^5.16.0",
+		"glob": "^7.2.3",
+		"mocha": "^6.2.3",
+		"typescript": "^3.9.10"
 	}
 }
