@@ -1100,7 +1100,9 @@ class DataClassGenerator {
                     const mapFlag = p.isSet ? (p.isNullable ? '?' : '') + '.toList()' : '';
                     method += `${p.name}${mapFlag},\n`;
                 } else {
-                    method += `${p.name}.map((x) => ${customTypeMapping(p, 'x', '')}).toList(),\n`
+                    const nullSafe = p.isNullable ? '?' : '';
+                    // method += `${p.name}.map((x) => ${customTypeMapping(p, 'x', '')}).toList(),\n`
+                    method += `${p.name}${nullSafe}.map((x) => x.toMap()).toList(),\n`
                 }
             } else {
                 method += customTypeMapping(p);
@@ -1117,8 +1119,8 @@ class DataClassGenerator {
      */
     insertFromMap(clazz) {
         let withDefaultValues = readSetting('fromMap.default_values');
-        const leftOfValue = withDefaultValues ? '(': '' ;
-        const rightOfValue = withDefaultValues ? ')': '' ;
+        const leftOfValue = withDefaultValues ? '(' : '';
+        const rightOfValue = withDefaultValues ? ')' : '';
         let props = clazz.properties;
         const fromJSON = this.fromJSON;
 
@@ -1126,42 +1128,40 @@ class DataClassGenerator {
          * @param {ClassField} prop
          */
         function customTypeMapping(prop, value = null) {
-            const materialConvertValue = prop.isCollection ? "" :" as int";
+            const materialConvertValue = prop.isCollection ? "" : " as int";
             prop = prop.isCollection ? prop.listType : prop;
-            const isAddDefault = withDefaultValues && prop.rawType != 'dynamic'&& !prop.isNullable &&  prop.isPrimitive;
-            const addLeftDefault = isAddDefault  ? leftOfValue : '';
+            const isAddDefault = withDefaultValues && prop.rawType != 'dynamic' && !prop.isNullable && prop.isPrimitive;
+            const addLeftDefault = isAddDefault ? leftOfValue : '';
             const addRightDefault = isAddDefault ? rightOfValue : '';
             value = value == null ? `${addLeftDefault}map['` + prop.jsonName + "']" : value;
 
             switch (prop.type) {
                 case 'DateTime':
-                    value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
+                    value = withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
                     return `(${value} as Timestamp).toDate()`;
                 case 'Duration':
-                    value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
+                    value = withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
                     return `Duration(seconds: (${value} as int))`;
                 case 'Color':
-                    value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
+                    value = withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
                     return `Color(${value}${materialConvertValue})`;
                 case 'IconData':
-                    value=withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
+                    value = withDefaultValues ? `${leftOfValue}${value}??0${rightOfValue}` : value;
                     return `IconData(${value}${materialConvertValue}, fontFamily: 'MaterialIcons')`
                 default:
-                    return `${
-                      !prop.isPrimitive ? prop.type + ".fromMap(" : ""
-                    }${value}${!prop.isPrimitive ? " as Map<String,dynamic>)" : ""}${
-                      fromJSON
-                        ? prop.isDouble
-                          ? ".toDouble()"
-                          : prop.isInt
-                          ? ".toInt()"
-                          : ""
-                        : ""
-                    }${
-                        isAddDefault
-                        ? ` ?? ${prop.defValue}${addRightDefault}`
-                        : ""
-                    }`;
+                    return `${!prop.isPrimitive ? prop.type + ".fromMap(" : ""
+                        // }${value}${!prop.isPrimitive ? " as Map<String,dynamic>)" : ""}${
+                        }${value}${!prop.isPrimitive ? ")" : ""}${fromJSON
+                            ? prop.isDouble
+                                ? ".toDouble()"
+                                : prop.isInt
+                                    ? ".toInt()"
+                                    : ""
+                            : ""
+                        }${isAddDefault
+                            ? ` ?? ${prop.defValue}${addRightDefault}`
+                            : ""
+                        }`;
             }
         }
 
@@ -1194,23 +1194,24 @@ class DataClassGenerator {
 
             } else if (p.isCollection) {
                 const defaultValue =
-                  withDefaultValues && !p.isNullable && p.isPrimitive
-                    ? ` ?? const <${p.listType.rawType}>${
-                        p.isList ? "[]" : "{}"
-                      })`
-                    : "";
+                    withDefaultValues && !p.isNullable && p.isPrimitive
+                        ? ` ?? const <${p.listType.rawType}>${p.isList ? "[]" : "{}"
+                        })`
+                        : "";
 
                 method += `${p.type}.from`;
                 /// List<String>.from(map['allowed'] ?? const <String>[] as List<String>), 
                 if (p.isPrimitive) {
                     method += `(${value}${defaultValue} as ${p.type})`;
                 } else {
-                    method += `(${value} as List<int>).map<${p.listType.rawType}>((x) => ${customTypeMapping(p, 'x')},),${defaultValue})`;
+                    const nullSafe = p.isNullable ? '?' : '';
+                    method += `(${value}${nullSafe}.map((x) => ${customTypeMapping(p, 'x')},),${defaultValue})`;
+                    // method += `(${value} as List<int>).map<${p.listType.rawType}>((x) => ${customTypeMapping(p, 'x')},),${defaultValue})`;
                 }
-            /// (map['name'] ?? '') as String
+                /// (map['name'] ?? '') as String
             } else {
-                if (p.isPrimitive) 
-                    method += customTypeMapping(p)+` as ${p.type}`;
+                if (p.isPrimitive)
+                    method += customTypeMapping(p) + ` as ${p.type}`;
                 else
                     method += customTypeMapping(p);
             }
@@ -1386,7 +1387,7 @@ class DataClassGenerator {
         this.requiresImport('package:equatable/equatable.dart');
 
         if (!clazz.usesEquatable) {
-            if (clazz.hasSuperclass||readSetting('useEquatableMixin')) {
+            if (clazz.hasSuperclass || readSetting('useEquatableMixin')) {
                 this.addMixin('EquatableMixin');
             } else {
                 this.setSuperClass('Equatable');
@@ -2187,28 +2188,28 @@ function getReplaceEdit(values, imports = null, showLogs = false) {
 
     const text = getDocText();
     text.split("\n").forEach(function (line) {
-      if (line.includes("// ignore_for_file:")) lines.push(line);
+        if (line.includes("// ignore_for_file:")) lines.push(line);
     });
     let isIncluding;
     ignoreComment.split(",").forEach((ignore) => {
-      ignore.trim();
+        ignore.trim();
 
-      isIncluding = false;
-      lines.forEach((line) => {
-        if (line.includes(ignore)) {
-          isIncluding = true;
+        isIncluding = false;
+        lines.forEach((line) => {
+            if (line.includes(ignore)) {
+                isIncluding = true;
+            }
+        });
+        for (let line in lines) {
         }
-      });
-      for (let line in lines) {
-      }
-      if (!isIncluding) ignores.push(ignore);
+        if (!isIncluding) ignores.push(ignore);
     });
     if (ignores.length > 0)
-      edit.insert(
-        uri,
-        new vscode.Position(0, 0),
-        `// ignore_for_file: ${ignores.join(",")}\n`
-      );
+        edit.insert(
+            uri,
+            new vscode.Position(0, 0),
+            `// ignore_for_file: ${ignores.join(",")}\n`
+        );
 
 
     for (var i = clazzes.length - 1; i >= 0; i--) {
